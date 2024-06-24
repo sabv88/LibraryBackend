@@ -26,7 +26,7 @@ namespace LibraryApplication.Authors.Commands.UpdateAuthor
 
             entity = _mapper.Map<Author>(request.updateAuthorDto);
             var books = _mapper.Map<List<Book>>(request.updateAuthorDto.Books);
-            //await _unitOfWork.authorRepository.AddBooksToAuthor(author, books, cancellationToken);
+            await _unitOfWork.authorRepository.AddBooksToAuthor(entity, books, cancellationToken);
             _unitOfWork.authorRepository.Update(entity);
             await _unitOfWork.Save(cancellationToken);
 
