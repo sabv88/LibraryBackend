@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using LibraryApplication.Borrows.Commands.CreateBorrow;
-using LibraryWebApi.Models.Borrows;
+using LibraryApplication.DTOs.Borrows.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,19 +35,13 @@ namespace LibraryWebApi.Controllers
 
         [HttpPost]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Create([FromBody] CreateBorrowDto createBorrowDto)
+        public async Task<IActionResult> Create([FromBody] CreateBorrowDto createBorrowDto, CancellationToken cancellationToken)
         {
 
-            var command = new CreateBorrowCommand
-            {
-                UserId = UserId,
-                BookId = createBorrowDto.BookId,
-                TakingTime = DateTime.UtcNow,
-                ReturnTime = createBorrowDto.ReturnTime,
-            };
-            var borrowId = await Mediator.Send(command);
+            var command = new CreateBorrowCommand(UserId, createBorrowDto);
+            var borrowId = await Mediator.Send(command, cancellationToken);
             return Ok(borrowId);
         }
     }

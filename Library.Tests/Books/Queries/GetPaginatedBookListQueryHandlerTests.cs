@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryApplication.Books.Queries.GetBookListPaginated;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Book.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using LibraryTests.Common;
 using Shouldly;
 
@@ -26,7 +27,7 @@ namespace Library.Tests.Books.Queries
 
             // Act
             var result = await handler.Handle(
-                new GetPaginatedBookListQuery { PageNumber = 1, PageSize = 2 },
+                new GetPaginatedBookListQuery (1, 2),
                 CancellationToken.None);
 
             // Assert

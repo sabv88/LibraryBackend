@@ -1,14 +1,7 @@
-﻿using LibraryDomain.Entities;
+﻿using LibraryApplication.DTOs.Authors.Request;
 using MediatR;
 
 namespace LibraryApplication.Authors.Commands.CreateAuthor
 {
-    public class CreateAuthorCommand : IRequest<Guid>
-    {
-        public string? Name { get; set; }
-        public string? Surname { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string? Country { get; set; }
-        public List<Book>? Books { get; set; }
-    }
+    public record CreateAuthorCommand(CreateAuthorDto сreateAuthorDto) : IRequest<Guid>;
 }

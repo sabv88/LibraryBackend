@@ -1,8 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Authors.Responce;
+using MediatR;
 
 namespace LibraryApplication.Authors.Queries.GetAuthorList
 {
-    public class GetAuthorListQuery : IRequest<AuthorList>
-    {
-    }
+    public record GetAuthorListQuery : IRequest<AuthorList>;
 }

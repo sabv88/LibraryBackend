@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBooksSearchByName
 {
-    public class GetBooksBySearchTitleQuery : IRequest<BookBySearchTitleList>
-    {
-        public string Title { get; set; }
-    }
+    public record GetBooksBySearchTitleQuery(string Title) : IRequest<BookBySearchTitleList>;
 }

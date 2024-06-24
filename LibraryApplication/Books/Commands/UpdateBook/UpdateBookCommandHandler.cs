@@ -1,6 +1,7 @@
-﻿using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Repositories;
+﻿using AutoMapper;
+using LibraryApplication.Common.Exceptions;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Books.Commands.UpdateBook
@@ -8,38 +9,26 @@ namespace LibraryApplication.Books.Commands.UpdateBook
     public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public UpdateBookCommandHandler(IUnitOfWork unitOfWork) =>
-            _unitOfWork = unitOfWork;
+        public UpdateBookCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) =>
+        (_unitOfWork, _mapper) = (unitOfWork, mapper);
 
         public async Task<Unit> Handle(UpdateBookCommand request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Book>().GetByIdAsync(request.Id);
+            var entity = await _unitOfWork.bookRepository.GetByIdAsync(request.updateBookDto.Id);
 
             if (entity == null)
             {
-                throw new NotFoundException(nameof(Book), request.Id);
+                throw new NotFoundException(nameof(Book), request.updateBookDto.Id);
             }
 
-            entity.ISBN = request.ISBN;
-            entity.Title = request.Title;
-            entity.Genre = request.Genre;
-            entity.Description = request.Description;
-            entity.Count = request.Count;
-            entity.ImagePath = request.ImagePath;
-            entity.Authors = request.Authors;
-
-            foreach (var author in request.Authors)
-            {
-                var entityAuthor = await _unitOfWork.Repository<Author>().GetByIdAsync(author.Id);
-                if (entityAuthor != null)
-                {
-                    entity.Authors.Add(entityAuthor);
-                }
-            }
+            entity = _mapper.Map<Book>(request.updateBookDto);
+            var authors = _mapper.Map<List<Author>>(request.updateBookDto.Authors);
+            await _unitOfWork.bookRepository.AddAuthorsToBook(entity, authors, cancellationToken);
+            _unitOfWork.bookRepository.Update(entity);
             await _unitOfWork.Save(cancellationToken);
-
             return Unit.Value;
         }
     }

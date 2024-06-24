@@ -1,10 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBookListPaginated
 {
-    public class GetPaginatedBookListQuery : IRequest<BookPaginatedList>
-    {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
-    }
+    public record GetPaginatedBookListQuery(int PageNumber, int PageSize) : IRequest<BookPaginatedList>;
 }

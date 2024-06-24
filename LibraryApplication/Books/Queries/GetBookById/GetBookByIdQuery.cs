@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBookById
 {
-    public class GetBookByIdQuery : IRequest<GetBookByIdDto>
-    {
-        public Guid Id { get; set; }
-    }
+    public record GetBookByIdQuery(Guid Id) : IRequest<GetBookByIdDto>;
 }

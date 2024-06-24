@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Authors.Responce;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Authors.Queries.GetAuthorById
@@ -17,7 +18,7 @@ namespace LibraryApplication.Authors.Queries.GetAuthorById
         public async Task<GetAuthorByIdDto> Handle(GetAuthorByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Author>()
+            var entity = await _unitOfWork.authorRepository
                 .GetByIdAsync(request.Id);
 
             if (entity == null)

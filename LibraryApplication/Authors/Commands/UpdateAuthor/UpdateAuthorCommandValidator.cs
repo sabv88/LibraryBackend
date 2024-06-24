@@ -6,13 +6,13 @@ namespace LibraryApplication.Authors.Commands.UpdateAuthor
     {
         public UpdateAuthorCommandValidator()
         {
-            RuleFor(updateAuthorCommand => updateAuthorCommand.Id).NotEqual(Guid.Empty);
+            RuleFor(updateAuthorCommand => updateAuthorCommand.updateAuthorDto.Id).NotEqual(Guid.Empty);
             RuleFor(updateAuthorCommand =>
-               updateAuthorCommand.Name).NotNull().NotEmpty().MaximumLength(50);
+               updateAuthorCommand.updateAuthorDto.Name).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(updateAuthorCommand =>
-                updateAuthorCommand.Surname).NotNull().NotEmpty().MaximumLength(50);
+                updateAuthorCommand.updateAuthorDto.Surname).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(updateAuthorCommand =>
-                updateAuthorCommand.DateOfBirth).NotNull().NotEqual(DateTime.MinValue);
+                updateAuthorCommand.updateAuthorDto.DateOfBirth).NotNull().NotEqual(DateTime.MinValue);
         }
     }
 }

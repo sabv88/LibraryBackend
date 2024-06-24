@@ -6,8 +6,9 @@ using LibraryApplication.Authors.Queries.GetAuthorById;
 using LibraryApplication.Authors.Queries.GetAuthorList;
 using LibraryApplication.Authors.Queries.GetAuthorListPaginated;
 using Microsoft.AspNetCore.Mvc;
-using LibraryWebApi.Models.Author;
 using Microsoft.AspNetCore.Authorization;
+using LibraryApplication.DTOs.Authors.Responce;
+using LibraryApplication.DTOs.Authors.Request;
 
 namespace LibraryWebApi.Controllers
 {
@@ -30,11 +31,12 @@ namespace LibraryWebApi.Controllers
         /// </remarks>
         /// <returns>Returns AuthorsList</returns>
         /// <response code="200">Success</response>
+        
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<AuthorList>> GetAll()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<AuthorList>> GetAll(CancellationToken cancellationToken)
         {
-            var vm = await Mediator.Send(new GetAuthorListQuery());
+            var vm = await Mediator.Send(new GetAuthorListQuery(), cancellationToken);
             return Ok(vm);
         }
 
@@ -50,16 +52,19 @@ namespace LibraryWebApi.Controllers
         /// }
         /// </remarks>
         /// <param name="getPaginatedAuthorListQuery">GetPaginatedAuthorListQuery object</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns paginated AuthorList</returns>
         /// <response code="200">Success</response>
+
         [HttpGet]
-        [Route("paginated")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<AuthorPaginatedList>> GetPaginated([FromQuery] GetPaginatedAuthorListQuery getPaginatedAuthorListQuery)
+        [Route("paged")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<AuthorPaginatedList>> GetPaginated([FromQuery] GetPaginatedAuthorListQuery getPaginatedAuthorListQuery, CancellationToken cancellationToken)
         {
-            var vm = await Mediator.Send(getPaginatedAuthorListQuery);
+            var vm = await Mediator.Send(getPaginatedAuthorListQuery, cancellationToken);
             return Ok(vm);
         }
+
         /// <summary>
         /// Gets the author by id
         /// </summary>
@@ -68,17 +73,16 @@ namespace LibraryWebApi.Controllers
         /// GET /author/D34D349E-43B8-429E-BCA4-793C932FD580
         /// </remarks>
         /// <param name="id">Author id (guid)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns GetAuthorByIdDto</returns>
         /// <response code="200">Success</response>
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetAuthorByIdDto>> Get(Guid id)
+        public async Task<ActionResult<GetAuthorByIdDto>> Get(Guid id, CancellationToken cancellationToken)
         {
-            var query = new GetAuthorByIdQuery
-            {
-                Id = id
-            };
-            var vm = await Mediator.Send(query);
+            var query = new GetAuthorByIdQuery(id);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
 
@@ -96,6 +100,7 @@ namespace LibraryWebApi.Controllers
         /// }
         /// </remarks>
         /// <param name="createAuthorDto">CreateBookDto object</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns id (guid)</returns>
         /// <response code="201">Success</response>
         /// <response code="401">If the user is unauthorized</response>
@@ -105,10 +110,10 @@ namespace LibraryWebApi.Controllers
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Guid>> Create([FromBody] CreateAuthorDto createAuthorDto)
+        public async Task<ActionResult<Guid>> Create([FromBody] CreateAuthorDto createAuthorDto, CancellationToken cancellationToken)
         {
-            var command = _mapper.Map<CreateAuthorCommand>(createAuthorDto);
-            var authorId = await Mediator.Send(command);
+            var command = new CreateAuthorCommand(createAuthorDto);
+            var authorId = await Mediator.Send(command, cancellationToken);
             return Ok(authorId);
         }
 
@@ -126,20 +131,23 @@ namespace LibraryWebApi.Controllers
         /// }
         /// </remarks>
         /// <param name="updateAuthorDto">UpdateBooktDto object</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns NoContent</returns>
         /// <response code="204">Success</response>
         /// <response code="401">If the user is unauthorized</response>
-        /// 
+
+
         [HttpPut]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Update([FromBody] UpdateAuthorDto updateAuthorDto)
+        public async Task<IActionResult> Update([FromBody] UpdateAuthorDto updateAuthorDto, CancellationToken cancellationToken)
         {
-            var command = _mapper.Map<UpdateAuthorCommand>(updateAuthorDto);
-            await Mediator.Send(command);
+            var command = new UpdateAuthorCommand(updateAuthorDto);
+            await Mediator.Send(command, cancellationToken);
             return NoContent();
         }
+
         /// <summary>
         /// Deletes the author by id
         /// </summary>
@@ -148,21 +156,20 @@ namespace LibraryWebApi.Controllers
         /// DELETE /author/88DEB432-062F-43DE-8DCD-8B6EF79073D3
         /// </remarks>
         /// <param name="id">Id of the author (guid)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns NoContent</returns>
         /// <response code="204">Success</response>
         /// <response code="401">If the user is unauthorized</response>
         /// 
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var command = new DeleteAuthorCommand
-            {
-                Id = id
-            };
-            await Mediator.Send(command);
+            var command = new DeleteAuthorCommand(id);
+            await Mediator.Send(command, cancellationToken);
             return NoContent();
         }
     }

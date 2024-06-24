@@ -1,8 +1,5 @@
-﻿using LibraryApplication.Interfaces;
-using LibraryApplication.Interfaces.Repositories;
-using LibraryApplication.Repositories;
+﻿using LibraryDomain.Interfaces.Repositories;
 using LibraryPersistence.Repositories;
-using LibraryPersistence.Repositories.CleanArchitectureDemo.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,10 +16,9 @@ namespace LibraryPersistence
             {
                 options.UseNpgsql(connectionString);
             });
-            services.AddTransient<ILibraryDbContext, LibraryDbContext>()
-                .AddTransient<IBookRepository, BookRepository>()
+            services.AddTransient<IBookRepository, BookRepository>()
                 .AddTransient<IAuthorRepository, AuthorRepository>()
-                 .AddTransient<IUserRepository, UserRepository>()
+                .AddTransient<IUserRepository, UserRepository>()
                 .AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>))
                 .AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
 

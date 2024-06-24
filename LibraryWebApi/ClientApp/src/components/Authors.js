@@ -2,7 +2,7 @@
 import ModalButton from "./ModalBtn";
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
-import userManager, { loadUser, signinRedirect, signoutRedirect } from '../auth/user-service.ts';
+import { getAuthors, addAuthor, updateAuthor, deleteAuthor }  from '../services/AuthorService';
 
 
 const URL = `api/author`;
@@ -15,94 +15,15 @@ const Authors = () => {
 
     const [allAuthors, setAuthors] = useState([]);
 
-    const getAuthors = async () =>
-    {
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        const options = {
-            method: 'GET',
-            headers: headers
-        }
-        const result = await fetch(URL, options);
-        console.log(result);
-        if (result.ok) {
-            const authors = await result.json();
-            console.log(authors.authors);
 
-            setAuthors(authors.authors);
-            return authors.authors;
-        }
-        return [];
-    }
-
-    const addAuthor = async () =>
+    useEffect(() =>
     {
-        const author = { surname, name, country, dateOfBirth };
-        console.log(author);
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        const options =
-        {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(author)
+        const fetchAuthors = async () => {
+            const authors = await getAuthors();
+            setAuthors(authors); 
         };
 
-        const result = await fetch(URL, options);
-        console.log(result);
-
-        if (result.ok)
-        {
-            allAuthors.push(await result.json());
-            setAuthors(allAuthors);
-        }
-    }
-
-    const updateAuthor = async (oldAuthor) =>
-    {
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        const options = {
-            method: 'PUT',
-            headers: headers,
-            body: JSON.stringify(oldAuthor)
-        };
-
-        const result = await fetch(URL, options);
-        if (result.ok) {
-            const author = await result.json();
-            const updatedAuthor = allAuthors.findIndex(x => x.id === oldAuthor.id);
-            allAuthors[updatedAuthor] = author;
-            setAuthors(allAuthors.slice());
-        }
-    }
-
-    const deleteAuthor = async (id) =>
-    {
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        const options = {
-            method: 'DELETE',
-            headers: headers
-        }
-        fetch(URL + `/${id}`, options);
-        setAuthors(allAuthors.filter(x => x.id !== id));
-    }
-
-    useEffect(() => {
-        getAuthors();
+        fetchAuthors();
     }, [])
 
     return (
@@ -130,7 +51,7 @@ const Authors = () => {
                     placeholderText='Выберите дату'
                 />
 
-                <button onClick={() => addAuthor()}>Добавить автора</button>
+                <button onClick={() => addAuthor(name, surname, country, dateOfBirth)}>Добавить автора</button>
             </div>
             <div>
                 {allAuthors.map(x => <PostItem key={x.id} author={x} deleteAction={deleteAuthor} updateAction={updateAuthor} />)}

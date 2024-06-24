@@ -3,6 +3,9 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
+using LibraryApplication.DTOs.Authors;
+using LibraryApplication.DTOs.Book;
+using LibraryApplication.DTOs.Borrows;
 
 namespace LibraryApplication
 {

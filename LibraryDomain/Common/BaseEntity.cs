@@ -1,8 +1,6 @@
-﻿using LibraryDomain.Common.Interfaces;
-
-namespace LibraryDomain.Common
+﻿namespace LibraryDomain.Common
 {
-    public abstract class BaseEntity : IEntity
+    public abstract class BaseEntity
     {
         public Guid Id { get; set; }
     }

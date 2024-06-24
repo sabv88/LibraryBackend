@@ -1,52 +1,51 @@
-﻿using LibraryApplication.Repositories;
-using LibraryDomain.Common;
+﻿using LibraryDomain.Common;
+using LibraryDomain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryPersistence.Repositories
 {
-    namespace CleanArchitectureDemo.Persistence.Repositories
+
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
-        public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+        private readonly LibraryDbContext _dbContext;
+
+        public GenericRepository(LibraryDbContext dbContext)
         {
-            private readonly LibraryDbContext _dbContext;
+            _dbContext = dbContext;
+        }
+        public async Task<T> AddAsync(T entity, CancellationToken cancellationToken)
+        {
+            await _dbContext.Set<T>().AddAsync(entity, cancellationToken);
+            return entity;
+        }
 
-            public GenericRepository(LibraryDbContext dbContext)
-            {
-                _dbContext = dbContext;
-            }
+        public void Update(T entity)
+        {
+            _dbContext.Set<T>().Attach(entity);
+            _dbContext.Set<T>().Update(entity);
+        }
 
-            public IQueryable<T> Entities => _dbContext.Set<T>();
+        public void Delete(T entity)
+        {
+            _dbContext.Set<T>().Remove(entity);
+        }
 
-            public async Task<T> AddAsync(T entity)
-            {
-                await _dbContext.Set<T>().AddAsync(entity);
-                return entity;
-            }
+        public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            return await _dbContext
+                .Set<T>().AsNoTracking()
+                .ToListAsync(cancellationToken);
+        }
 
-            public Task UpdateAsync(T entity)
-            {
-                T exist = _dbContext.Set<T>().Find(entity.Id);
-                _dbContext.Entry(exist).CurrentValues.SetValues(entity);
-                return Task.CompletedTask;
-            }
+        public async Task<T> GetByIdAsync(Guid id)
+        {
+            return await _dbContext.Set<T>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        }
 
-            public Task DeleteAsync(T entity)
-            {
-                _dbContext.Set<T>().Remove(entity);
-                return Task.CompletedTask;
-            }
-
-            public async Task<List<T>> GetAllAsync()
-            {
-                return await _dbContext
-                    .Set<T>()
-                    .ToListAsync();
-            }
-
-            public async Task<T> GetByIdAsync(Guid id)
-            {
-                return await _dbContext.Set<T>().FindAsync(id);
-            }
+        public async Task<List<T>> GetPaginatedListAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            return await _dbContext
+                .Set<T>().Skip((pageNumber - 1) * pageSize).Take(pageSize).AsNoTracking().ToListAsync(cancellationToken);
         }
     }
 }

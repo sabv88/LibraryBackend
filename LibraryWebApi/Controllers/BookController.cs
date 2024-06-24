@@ -6,12 +6,13 @@ using LibraryApplication.Books.Queries.GetBookById;
 using LibraryApplication.Books.Queries.GetBookList;
 using LibraryApplication.Books.Queries.GetBookListPaginated;
 using Microsoft.AspNetCore.Mvc;
-using LibraryWebApi.Models.Book;
 using Microsoft.AspNetCore.Authorization;
 using LibraryApplication.Books.Queries.GetBookByISBN;
 using LibraryApplication.Books.Queries.GetBooksByAuthor;
 using LibraryApplication.Books.Queries.GetBooksSearchByName;
 using LibraryApplication.Books.Queries.GetBooksByGenre;
+using LibraryApplication.DTOs.Book.Responce;
+using LibraryApplication.DTOs.Book.Request;
 
 namespace LibraryWebApi.Controllers
 {
@@ -34,11 +35,12 @@ namespace LibraryWebApi.Controllers
         /// </remarks>
         /// <returns>Returns BookList</returns>
         /// <response code="200">Success</response>
+        
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<BookList>> GetAll()
+        [ProducesResponseType(StatusCodes.Status200OK  )]
+        public async Task<ActionResult<BookList>> GetAll(CancellationToken cancellationToken)
         {
-            var vm = await Mediator.Send(new GetBookListQuery());
+            var vm = await Mediator.Send(new GetBookListQuery(), cancellationToken);
             return Ok(vm);
         }
 
@@ -54,13 +56,15 @@ namespace LibraryWebApi.Controllers
         /// }
         /// </remarks>
         /// <param name="getPaginatedBookListQuery">GetPaginatedBookListQuery object</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns paginated BookList</returns>
         /// <response code="200">Success</response>
-        [HttpGet("paginated/{getPaginatedBookListQuery}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<BookPaginatedList>> GetPaginated([FromQuery] GetPaginatedBookListQuery getPaginatedBookListQuery)
+
+        [HttpGet("paged/{getPaginatedBookListQuery}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<BookPaginatedList>> GetPaginated([FromQuery] GetPaginatedBookListQuery getPaginatedBookListQuery, CancellationToken cancellationToken)
         {
-            var vm = await Mediator.Send(getPaginatedBookListQuery);
+            var vm = await Mediator.Send(getPaginatedBookListQuery, cancellationToken);
             return Ok(vm);
         }
 
@@ -72,18 +76,16 @@ namespace LibraryWebApi.Controllers
         /// GET /book/author/D34D349E-43B8-429E-BCA4-793C932FD580
         /// </remarks>
         /// <param name="authorId">Author id (guid)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns all Books of the author </returns>
         /// <response code="200">Success</response>
 
-        [HttpGet("authorBooks/{authorId}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<BookByAuthorList>> GetBooksByAuthor(Guid authorId)
+        [HttpGet("author/{authorId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<BookByAuthorList>> GetBooksByAuthor(Guid authorId, CancellationToken cancellationToken)
         {
-            var query = new GetBookByAuthorQuery
-            {
-                authorId = authorId
-            };
-            var vm = await Mediator.Send(query);
+            var query = new GetBookByAuthorQuery(authorId);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
 
@@ -95,18 +97,16 @@ namespace LibraryWebApi.Controllers
         /// GET /book/genre/sampleGenre
         /// </remarks>
         /// <param name="genre">Genre(string)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns Books by genre </returns>
         /// <response code="200">Success</response>
 
         [HttpGet("genre/{genre}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<BookByGenreList>> GetBooksByGenre(string genre)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<BookByGenreList>> GetBooksByGenre(string genre, CancellationToken cancellationToken)
         {
-            var query = new GetBooksByGenreQuery
-            {
-                Genre = genre
-            };
-            var vm = await Mediator.Send(query);
+            var query = new GetBooksByGenreQuery(genre);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
 
@@ -118,17 +118,16 @@ namespace LibraryWebApi.Controllers
         /// GET /book/D34D349E-43B8-429E-BCA4-793C932FD580
         /// </remarks>
         /// <param name="id">Book id (guid)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns GetBookByIdDto</returns>
         /// <response code="200">Success</response>
+        
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetBookByIdDto>> Get(Guid id)
+        public async Task<ActionResult<GetBookByIdDto>> Get(Guid id, CancellationToken cancellationToken)
         {
-            var query = new GetBookByIdQuery
-            {
-                Id = id
-            };
-            var vm = await Mediator.Send(query);
+            var query = new GetBookByIdQuery(id);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
 
@@ -140,18 +139,16 @@ namespace LibraryWebApi.Controllers
         /// GET /book/978-3-16-148410-0
         /// </remarks>
         /// <param name="isbn">Book isbn (string)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns GetBookByISBNDto</returns>
         /// <response code="200">Success</response>
-        
+
         [HttpGet("isbn/{isbn}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetBookByISBNDto>> GetISBN(string isbn)
+        public async Task<ActionResult<GetBookByISBNDto>> GetISBN(string isbn, CancellationToken cancellationToken)
         {
-            var query = new GetBookByISBNQuery
-            {
-                ISBN = isbn
-            };
-            var vm = await Mediator.Send(query);
+            var query = new GetBookByISBNQuery(isbn);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
 
@@ -163,18 +160,16 @@ namespace LibraryWebApi.Controllers
         /// GET /book/search/bookTitle
         /// </remarks>
         /// <param name="title">Book title (string)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns BookBySearchTitleList</returns>
         /// <response code="200">Success</response>
 
         [HttpGet("search/{title}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<BookBySearchTitleList>> SearchByTitle(string title)
+        public async Task<ActionResult<BookBySearchTitleList>> SearchByTitle(string title, CancellationToken cancellationToken)
         {
-            var query = new GetBooksBySearchTitleQuery
-            {
-                Title = title
-            };
-            var vm = await Mediator.Send(query);
+            var query = new GetBooksBySearchTitleQuery(title);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
 
@@ -197,6 +192,7 @@ namespace LibraryWebApi.Controllers
         /// }
         /// </remarks>
         /// <param name="createBookDto">CreateBookDto object</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns id (guid)</returns>
         /// <response code="201">Success</response>
         /// <response code="401">If the user is unauthorized</response>
@@ -206,10 +202,10 @@ namespace LibraryWebApi.Controllers
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Guid>> Create([FromBody] CreateBookDto createBookDto)
+        public async Task<ActionResult<Guid>> Create([FromBody] CreateBookDto createBookDto, CancellationToken cancellationToken)
         {
-            var command = _mapper.Map<CreateBookCommand>(createBookDto);
-            var bookId = await Mediator.Send(command);
+            var command = new CreateBookCommand(createBookDto);
+            var bookId = await Mediator.Send(command, cancellationToken);
             return Ok(bookId);
         }
 
@@ -233,18 +229,20 @@ namespace LibraryWebApi.Controllers
         /// }
         /// </remarks>
         /// <param name="updateBookDto">UpdateBooktDto object</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns NoContent</returns>
         /// <response code="204">Success</response>
         /// <response code="401">If the user is unauthorized</response>
         /// 
+
         [HttpPut]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Update([FromBody] UpdateBookDto updateBookDto)
+        public async Task<IActionResult> Update([FromBody] UpdateBookDto updateBookDto, CancellationToken cancellationToken)
         {
-            var command = _mapper.Map<UpdateBookCommand>(updateBookDto);
-            await Mediator.Send(command);
+            var command = new UpdateBookCommand(updateBookDto);
+            await Mediator.Send(command, cancellationToken);
             return NoContent();
         }
 
@@ -256,6 +254,7 @@ namespace LibraryWebApi.Controllers
         /// DELETE /book/88DEB432-062F-43DE-8DCD-8B6EF79073D3
         /// </remarks>
         /// <param name="id">Id of the book (guid)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Returns NoContent</returns>
         /// <response code="204">Success</response>
         /// <response code="401">If the user is unauthorized</response>
@@ -265,13 +264,10 @@ namespace LibraryWebApi.Controllers
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var command = new DeleteBookCommand
-            {
-                Id = id
-            };
-            await Mediator.Send(command);
+            var command = new DeleteBookCommand(id);
+            await Mediator.Send(command, cancellationToken);
             return NoContent();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Repositories;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Books.Commands.DeleteBook
@@ -15,14 +15,14 @@ namespace LibraryApplication.Books.Commands.DeleteBook
         public async Task<Unit> Handle(DeleteBookCommand request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Book>().GetByIdAsync(request.Id);
+            var entity = await _unitOfWork.bookRepository.GetByIdAsync(request.Id);
 
             if (entity == null)
             {
                 throw new NotFoundException(nameof(Book), request.Id);
             }
 
-            await _unitOfWork.Repository<Book>().DeleteAsync(entity);
+            _unitOfWork.bookRepository.Delete(entity);
             await _unitOfWork.Save(cancellationToken);
 
             return Unit.Value;

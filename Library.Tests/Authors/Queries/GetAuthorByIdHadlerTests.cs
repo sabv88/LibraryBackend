@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryApplication.Authors.Queries.GetAuthorById;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Authors.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using LibraryTests.Common;
 using Shouldly;
 
@@ -26,7 +27,7 @@ namespace Library.Tests.Authors.Queries
 
             // Act
             var result = await handler.Handle(
-                new GetAuthorByIdQuery { Id = Guid.Parse("A88661F1-5516-445E-8C28-BBC2549EDAB8") }, CancellationToken.None);
+                new GetAuthorByIdQuery (Guid.Parse("A88661F1-5516-445E-8C28-BBC2549EDAB8") ), CancellationToken.None);
             // Assert
             result.ShouldBeOfType<GetAuthorByIdDto>();
             result.Name.ShouldBe("Name2");

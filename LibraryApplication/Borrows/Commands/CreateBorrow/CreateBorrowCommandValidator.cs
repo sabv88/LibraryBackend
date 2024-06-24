@@ -10,12 +10,9 @@ namespace LibraryApplication.Borrows.Commands.CreateBorrow
             RuleFor(createAuthorCommand =>
                   createAuthorCommand.UserId).NotNull().NotEmpty();
             RuleFor(createAuthorCommand =>
-                createAuthorCommand.BookId).NotNull().NotEmpty();
+                createAuthorCommand.createBorrowDto.BookId).NotNull().NotEmpty();
             RuleFor(createAuthorCommand =>
-                createAuthorCommand.TakingTime).NotNull().NotEqual(DateTime.MinValue);
-            RuleFor(createAuthorCommand =>
-               createAuthorCommand.ReturnTime).NotNull().GreaterThan(createAuthorCommand =>
-               createAuthorCommand.TakingTime);
+                createAuthorCommand.createBorrowDto.ReturnTime).NotNull().NotEqual(DateTime.MinValue);
         }
     }
 }

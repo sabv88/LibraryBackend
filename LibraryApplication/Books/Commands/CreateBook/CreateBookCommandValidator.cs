@@ -7,13 +7,13 @@ namespace LibraryApplication.Books.Commands.CreateBook
         public CreateBookCommandValidator()
         {
             RuleFor(createBookCommand =>
-                createBookCommand.Title).NotNull().NotEmpty().MaximumLength(50);
+                createBookCommand.createBookDto.Title).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(createBookCommand =>
-                createBookCommand.Genre).NotNull().NotEmpty().MaximumLength(50);
+                createBookCommand.createBookDto.Genre).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(createBookCommand =>
-                createBookCommand.Description).NotNull().NotEmpty().MaximumLength(500);
+                createBookCommand.createBookDto.Description).NotNull().NotEmpty().MaximumLength(500);
             RuleFor(createBookCommand =>
-                createBookCommand.Count).GreaterThanOrEqualTo(0);
+                createBookCommand.createBookDto.Count).GreaterThanOrEqualTo(0);
         }
     }
 }

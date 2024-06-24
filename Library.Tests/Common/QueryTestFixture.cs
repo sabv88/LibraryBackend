@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using LibraryApplication.Common.Mappings;
-using LibraryApplication.Interfaces;
+using LibraryApplication.DTOs.Authors;
+using LibraryApplication.DTOs.Book;
 using LibraryPersistence;
 
 namespace LibraryTests.Common
@@ -15,8 +15,8 @@ namespace LibraryTests.Common
             Context = LibraryContextFactory.Create();
             var configurationProvider = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new AssemblyMappingProfile(
-                    typeof(ILibraryDbContext).Assembly));
+                cfg.AddProfile(new BookMappingProfile());
+                cfg.AddProfile(new AuthorMappingProfile());
             });
             Mapper = configurationProvider.CreateMapper();
         }

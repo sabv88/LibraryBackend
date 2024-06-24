@@ -7,11 +7,11 @@ namespace LibraryApplication.Authors.Commands.CreateAuthor
         public CreateAuthorCommandValidator()
         {
             RuleFor(createAuthorCommand =>
-                createAuthorCommand.Name).NotNull().NotEmpty().MaximumLength(50);
+                createAuthorCommand.сreateAuthorDto.Name).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(createAuthorCommand =>
-                createAuthorCommand.Surname).NotNull().NotEmpty().MaximumLength(50);
+                createAuthorCommand.сreateAuthorDto.Surname).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(createAuthorCommand =>
-                createAuthorCommand.DateOfBirth).NotNull().NotEqual(DateTime.MinValue);
+                createAuthorCommand.сreateAuthorDto.DateOfBirth).NotNull().NotEqual(DateTime.MinValue);
         }
     }
 }

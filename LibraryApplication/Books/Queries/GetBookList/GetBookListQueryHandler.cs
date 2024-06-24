@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using LibraryApplication.Repositories;
-using LibraryDomain.Entities;
+using LibraryApplication.DTOs.Book.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibraryApplication.Books.Queries.GetBookList
 {
@@ -18,9 +16,10 @@ namespace LibraryApplication.Books.Queries.GetBookList
         public async Task<BookList> Handle(GetBookListQuery request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Book>().Entities.ProjectTo<BookLookupDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+            var entity = await _unitOfWork.bookRepository.GetAllAsync(cancellationToken);
+            var books = _mapper.Map<List<BookLookupDto>>(entity);
 
-            return new BookList { Books = entity };
+            return new BookList { Books = books };
         }
     }
 }

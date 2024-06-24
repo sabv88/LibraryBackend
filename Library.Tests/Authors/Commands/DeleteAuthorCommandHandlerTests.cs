@@ -1,6 +1,5 @@
 ﻿using LibraryApplication.Authors.Commands.DeleteAuthor;
 using LibraryApplication.Common.Exceptions;
-using LibraryDomain.Entities;
 using LibraryTests.Common;
 
 namespace LibraryTests.Authors.Commands
@@ -14,13 +13,11 @@ namespace LibraryTests.Authors.Commands
             var handler = new DeleteAuthorCommandHandler(Context);
 
             // Act
-            await handler.Handle(new DeleteAuthorCommand
-            {
-                Id = LibraryContextFactory.AuthorIdForDelete,
-            }, CancellationToken.None);
+            await handler.Handle(new DeleteAuthorCommand(LibraryContextFactory.AuthorIdForDelete)
+            , CancellationToken.None);
 
             // Assert
-            Assert.Null(await Context.Repository<Author>().GetByIdAsync(LibraryContextFactory.AuthorIdForDelete));
+            Assert.Null(await Context.authorRepository.GetByIdAsync(LibraryContextFactory.AuthorIdForDelete));
         }
 
         [Fact]
@@ -34,9 +31,9 @@ namespace LibraryTests.Authors.Commands
             await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await handler.Handle(
                     new DeleteAuthorCommand
-                    {
-                        Id = Guid.NewGuid(),
-                    },
+                    (
+                        Guid.NewGuid()
+                    ),
                     CancellationToken.None));
         }
     }

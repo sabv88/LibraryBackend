@@ -1,14 +1,10 @@
-using Serilog.Events;
 using Serilog;
-using System.Reflection;
 using System.Text.Json.Serialization;
 using LibraryWebApi.Services;
 using LibraryWebApi.Middleware;
-using LibraryApplication.Common.Mappings;
 using LibraryPersistence;
 using LibraryApplication.Interfaces;
 using LibraryApplication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -19,20 +15,10 @@ namespace LibraryWeApi
     {
         public static void Main(string[] args)
         {
-
-            Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .WriteTo.File("LibraryWebAppLog-.txt", rollingInterval:
-            RollingInterval.Day)
-            .CreateLogger();
+            ConfigureLogger.Configure();
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddAutoMapper(config =>
-            {
-                config.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
-                config.AddProfile(new AssemblyMappingProfile(typeof(ILibraryDbContext).Assembly));
-            });
-
+            builder.Services.AddMapper();
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -49,24 +35,8 @@ namespace LibraryWeApi
                     policy.AllowAnyOrigin();
                 });
             });
-            builder.Services.AddAuthentication(config =>
-            {
-                config.DefaultAuthenticateScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-                config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            })
-               .AddJwtBearer("Bearer", options =>
-               {
-                   options.Authority = "https://localhost:7287/";
-                   options.Audience = "LibraryWebAPI";
-                   options.RequireHttpsMetadata = false;
-               });
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("User", policy => policy.RequireRole("User"));
-            });
+            builder.Services.AddAuthenticationConfigure();
+            builder.Services.AddAuthorizationConfigure();
             builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>,
                     ConfigureSwaggerOptions>();
             builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();

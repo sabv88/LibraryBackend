@@ -1,6 +1,5 @@
 ﻿using LibraryApplication.Books.Commands.DeleteBook;
 using LibraryApplication.Common.Exceptions;
-using LibraryDomain.Entities;
 using LibraryTests.Common;
 
 namespace Library.Tests.Books.Commands
@@ -15,12 +14,12 @@ namespace Library.Tests.Books.Commands
 
             // Act
             await handler.Handle(new DeleteBookCommand
-            {
-                Id = LibraryContextFactory.BookIdForDelete,
-            }, CancellationToken.None);
+            (
+               LibraryContextFactory.BookIdForDelete
+            ), CancellationToken.None);
 
             // Assert
-            Assert.Null(await Context.Repository<Book>().GetByIdAsync(LibraryContextFactory.BookIdForDelete));
+            Assert.Null(await Context.bookRepository.GetByIdAsync(LibraryContextFactory.BookIdForDelete));
         }
 
         [Fact]
@@ -34,9 +33,9 @@ namespace Library.Tests.Books.Commands
             await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await handler.Handle(
                     new DeleteBookCommand
-                    {
-                        Id = Guid.NewGuid(),
-                    },
+                    (
+                        Guid.NewGuid()
+                    ),
                     CancellationToken.None));
         }
     }

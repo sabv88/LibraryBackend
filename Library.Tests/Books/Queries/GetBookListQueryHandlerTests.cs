@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryApplication.Books.Queries.GetBookList;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Book.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using LibraryTests.Common;
 using Shouldly;
 

@@ -2,10 +2,7 @@
 import ModalButton from "./ModalBtn";
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
-import userManager, { loadUser } from '../auth/user-service.ts';
-
-
-const URL = `api/book`;
+import { getBooks, addBook, updateBook, deleteBook } from '../services/BookService';
 
 const Books = () =>
 {
@@ -18,95 +15,7 @@ const Books = () =>
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedImageFile, setSelectedImageFile] = useState(null);
 
-    const [author, setAuthor] = useState(null);
-
     const [allBooks, setBooks] = useState([]);
-
-    const getBooks = async () =>
-    {
-        const options = {
-            method: 'GET',
-            headers: new Headers()
-        }
-        const result = await fetch(URL, options);
-        console.log(result);
-        if (result.ok)
-        {
-            const books = await result.json();
-            console.log(books.books);
-            
-            setBooks(books.books);
-            return books.books;
-        }
-        return [];
-    }
-
-    const addBook = async () =>
-    {
-        const imagePath = await ImageUpload();
-        console.log(imagePath);
-        const book = { isbn, title, genre, description, count, imagePath };
-        console.log(book);
-
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-
-        const options =
-        {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(book)
-        };
-
-        const result = await fetch(URL, options);
-        console.log(result);
-
-        if (result.ok)
-        {
-            allBooks.push(await result.json());
-            setBooks(allBooks);
-        }
-    }
-
-    const updateBook = async (oldBook) =>
-    {
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        const options = {
-            method: 'PUT',
-            headers: headers,
-            body: JSON.stringify(oldBook)
-        };
-
-        const result = await fetch(URL, options);
-        if (result.ok) {
-            const book = await result.json();
-            const updatedBook = allBooks.findIndex(x => x.id === oldBook.id);
-            allBooks[updatedBook] = book;
-            setBooks(allBooks.slice());
-        }
-    }
-
-    const deleteBook = async (id) =>
-    {
-        await loadUser();
-        const headers = new Headers();
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        const options = {
-            method: 'DELETE',
-            headers: headers
-        }
-        fetch(URL + `/${id}`, options);
-        setBooks(allBooks.filter(x => x.id !== id));
-    }
 
     const handleImageUpload = async (event) =>
     {
@@ -129,42 +38,15 @@ const Books = () =>
         }
     };
 
-    const ImageUpload = async () =>
-    {
-        if (selectedImage != null)
-        {
-            const formData = new FormData();
-            formData.append('FormFile', selectedImageFile);
-
-            const headers = new Headers();
-            headers.set('Content-Type', 'application/json');
-            const options =
-            {
-                method: 'POST',
-                body: formData
-            };
-            console.log(formData);
-            console.log(options);
-
-            const result = await fetch('/api/file', options);
-            if (result.ok)
-            {
-                console.log(result);
-                const path = await result.json();
-                console.log(path);
-                return await path;
-            }
-            console.log(result);
-            return result.path;
-        }
-        else
-        {
-            return null;
-        }
-    };
+ 
 
     useEffect(() => {
-        getBooks();
+        const fetchBooks = async () => {
+            const books = await getBooks();
+            setBooks(books);
+        };
+
+        fetchBooks();
     }, [])
 
     return (
@@ -201,7 +83,7 @@ const Books = () =>
                 </div>
              
 
-                <button onClick={() => addBook()}>Добавить книгу</button>
+                <button onClick={() => addBook(isbn, title, genre, description, count, selectedImageFile)}>Добавить книгу</button>
             </div>
             <div>
                 {allBooks.map(x => <PostItem key={x.id} book={x} deleteAction={deleteBook} updateAction={updateBook} handleImageUpload={handleImageUpload } />)}

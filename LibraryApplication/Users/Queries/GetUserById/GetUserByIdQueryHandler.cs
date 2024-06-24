@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Interfaces.Repositories;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Users.Request;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Users.Queries.GetUserById
@@ -18,7 +18,7 @@ namespace LibraryApplication.Users.Queries.GetUserById
         public async Task<GetUserByIdDto> Handle(GetUserByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var entity = await _userRepository.GetByIdAsync(request.Id);
+            var entity = await _userRepository.GetByIdAsyncWithBorrows(request.Id);
 
             if (entity == null)
             {

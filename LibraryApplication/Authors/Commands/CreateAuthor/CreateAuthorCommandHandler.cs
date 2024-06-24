@@ -1,5 +1,7 @@
-﻿using LibraryApplication.Repositories;
+﻿using AutoMapper;
+using LibraryApplication.Common.Exceptions;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Authors.Commands.CreateAuthor
@@ -7,36 +9,27 @@ namespace LibraryApplication.Authors.Commands.CreateAuthor
     public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, Guid>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public CreateAuthorCommandHandler(IUnitOfWork unitOfWork) =>
-            _unitOfWork = unitOfWork;
+        public CreateAuthorCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) => (_unitOfWork, _mapper) = (unitOfWork, mapper);
 
         public async Task<Guid> Handle(CreateAuthorCommand request,
             CancellationToken cancellationToken)
         {
-            var Author = new Author
-            {
-                Id = Guid.NewGuid(),
-                Name = request.Name,
-                Surname = request.Surname,
-                DateOfBirth = request.DateOfBirth,
-                Country = request.Country,
-                Books = new List<Book>(),
-            };
-            await _unitOfWork.Repository<Author>().AddAsync(Author);
+            var author = _mapper.Map<Author>(request.сreateAuthorDto);
 
-            foreach (var book in request.Books)
+            if(await _unitOfWork.authorRepository.GetForCheckAsync(author, cancellationToken) != null)
             {
-                var entityBook = await _unitOfWork.Repository<Book>().GetByIdAsync(book.Id);
-                if(entityBook != null)
-                {
-                    Author.Books.Add(entityBook);
-                }
+                throw new AlredyExistException(nameof(Author), author);
             }
 
+            author.Id = Guid.NewGuid();
+            await _unitOfWork.authorRepository.AddAsync(author, cancellationToken);
+            var books = _mapper.Map<List<Book>>(request.сreateAuthorDto.Books);
+            await _unitOfWork.authorRepository.AddBooksToAuthor(author, books, cancellationToken);
             await _unitOfWork.Save(cancellationToken);
 
-            return Author.Id;
+            return author.Id;
         }
     }
 }

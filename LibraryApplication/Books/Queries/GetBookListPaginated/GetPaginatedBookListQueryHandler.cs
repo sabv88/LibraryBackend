@@ -1,9 +1,7 @@
-﻿using LibraryApplication.Repositories;
-using LibraryDomain.Entities;
-using MediatR;
-using AutoMapper.QueryableExtensions;
+﻿using MediatR;
 using AutoMapper;
-using LibraryApplication.Common.Extentions;
+using LibraryApplication.DTOs.Book.Responce;
+using LibraryDomain.Interfaces.Repositories;
 
 namespace LibraryApplication.Books.Queries.GetBookListPaginated
 {
@@ -18,10 +16,10 @@ namespace LibraryApplication.Books.Queries.GetBookListPaginated
             CancellationToken cancellationToken)
         {
 
-            var a = await _unitOfWork.Repository<Book>().Entities
-            .ProjectTo<BookPaginatedDto>(_mapper.ConfigurationProvider)
-            .ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
-            return new BookPaginatedList { Books = a };
+            var a = await _unitOfWork.bookRepository.GetPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+            var books = _mapper.Map<List<BookPaginatedDto>>(a);
+
+            return new BookPaginatedList { Books = books };
         }
     }
 }

@@ -1,21 +1,20 @@
-﻿using LibraryApplication.Interfaces.Repositories;
-using LibraryApplication.Repositories;
-using LibraryDomain.Entities;
+﻿using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryPersistence.Repositories
 {
 
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private readonly IGenericRepository<User> _repository;
-        public UserRepository(IGenericRepository<User> repository)
+        private readonly LibraryDbContext _dbContext;
+        public UserRepository(LibraryDbContext dbContext): base(dbContext)
         {
-            _repository = repository;
+            _dbContext = dbContext;
         }
-        public async Task<User> GetByIdAsync(Guid id)
+        public async Task<User> GetByIdAsyncWithBorrows(Guid id)
         {
-            return await _repository.Entities.Include(c=>c.Books).FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbContext.Users.Include(c => c.Books).FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

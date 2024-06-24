@@ -1,8 +1,8 @@
 import Authors from "./components/Authors";
 import Books from "./components/Book";
 import Home  from "./components/Home";
-import SignInOidc from './auth/SigninOidc.tsx';
-import SignOutOidc from './auth/SignoutOidc.tsx';
+import SignInOidc from './auth/SigninOidc';
+import SignOutOidc from './auth/SignoutOidc';
 import User from './components/User'
 
 const AppRoutes = [

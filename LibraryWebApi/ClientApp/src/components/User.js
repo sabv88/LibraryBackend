@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import 'react-datepicker/dist/react-datepicker.css';
-import userManager, { loadUser, signinRedirect, signoutRedirect } from '../auth/user-service.ts';
+import userManager, { loadUser, signinRedirect, signoutRedirect } from '../auth/UserService';
 import DatePicker from 'react-datepicker';
 
 const URL = `api/user`;
@@ -28,11 +28,7 @@ const User = () =>
         {
             const user = await result.json();
             setUser(user);
-            console.log(user);
-
             setBorrows(user.borrows);
-            console.log(borrows);
-
             return user;
         }
         return [];

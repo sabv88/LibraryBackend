@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryApplication.Books.Queries.GetBookById;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Book.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using LibraryTests.Common;
 using Shouldly;
 
@@ -26,7 +27,7 @@ namespace Library.Tests.Books.Queries
 
             // Act
             var result = await handler.Handle(
-                new GetBookByIdQuery { Id = Guid.Parse("AC2818E0-FF27-46D7-9183-CC2D39E3130F") }, CancellationToken.None);
+                new GetBookByIdQuery (Guid.Parse("AC2818E0-FF27-46D7-9183-CC2D39E3130F") ), CancellationToken.None);
             // Assert
             result.ShouldBeOfType<GetBookByIdDto>();
             result.ISBN.ShouldBe("978-3-16-148410-0");

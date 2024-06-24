@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using LibraryApplication.Repositories;
-using LibraryDomain.Entities;
+using LibraryApplication.DTOs.Authors.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibraryApplication.Authors.Queries.GetAuthorList
 {
@@ -18,9 +16,9 @@ namespace LibraryApplication.Authors.Queries.GetAuthorList
         public async Task<AuthorList> Handle(GetAuthorListQuery request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Author>().Entities.ProjectTo<AuthorLookupDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
-
-            return new AuthorList { Authors = entity };
+            var entity = await _unitOfWork.authorRepository.GetAllAsync(cancellationToken);
+            var authors = _mapper.Map<List<AuthorLookupDto>>(entity);
+            return new AuthorList { Authors = authors };
         }
     }
 }

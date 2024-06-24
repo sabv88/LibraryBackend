@@ -1,38 +1,50 @@
-﻿using LibraryApplication.Repositories;
-using LibraryDomain.Common;
-using LibraryPersistence.Repositories.CleanArchitectureDemo.Persistence.Repositories;
-using System.Collections;
+﻿using LibraryDomain.Interfaces.Repositories;
+using LibraryPersistence.Repositories;
 
 namespace LibraryPersistence
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly LibraryDbContext _dbContext;
-        private Hashtable _repositories;
+
+        private IAuthorRepository _authorRepository { get; set; }
+        private IBookRepository _bookRepository { get; set; }
+        private IUserRepository _userRepository { get; set; }
+
         private bool disposed;
 
         public UnitOfWork(LibraryDbContext dbContext)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext;
         }
 
-        public IGenericRepository<T> Repository<T>() where T : BaseEntity
+        public IBookRepository bookRepository
         {
-            if (_repositories == null)
-                _repositories = new Hashtable();
-
-            var type = typeof(T).Name;
-
-            if (!_repositories.ContainsKey(type))
+            get
             {
-                var repositoryType = typeof(GenericRepository<>);
-
-                var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _dbContext);
-
-                _repositories.Add(type, repositoryInstance);
+                if (_bookRepository == null)
+                    _bookRepository = new BookRepository(_dbContext);
+                return _bookRepository;
             }
+        }
 
-            return (IGenericRepository<T>)_repositories[type];
+        public IAuthorRepository authorRepository
+        {
+            get
+            {
+                if (_authorRepository == null)
+                    _authorRepository = new AuthorRepository(_dbContext);
+                return _authorRepository;
+            }
+        }
+        public IUserRepository userRepository
+        {
+            get
+            {
+                if (_userRepository == null)
+                    _userRepository = new UserRepository(_dbContext);
+                return _userRepository;
+            }
         }
 
         public Task Rollback()
@@ -46,11 +58,6 @@ namespace LibraryPersistence
             return await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<int> SaveAndRemoveCache(CancellationToken cancellationToken, params string[] cacheKeys)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Dispose()
         {
             Dispose(true);
@@ -61,7 +68,7 @@ namespace LibraryPersistence
         {
             if (disposed)
             {
-                if (disposing)
+                if(disposing)
                 {
                     _dbContext.Dispose();
                 }

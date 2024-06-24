@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBooksByAuthor
 {
-    public class GetBookByAuthorQuery : IRequest<BookByAuthorList>
-    {
-        public Guid authorId { get; set; }
-    }
+    public record GetBookByAuthorQuery(Guid authorId) : IRequest<BookByAuthorList>;
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LibraryApplication.Authors.Queries.GetAuthorList;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Authors.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using LibraryTests.Common;
 using Shouldly;
 

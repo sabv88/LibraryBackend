@@ -7,13 +7,13 @@ namespace LibraryApplication.Books.Commands.UpdateBook
         public UpdateBookCommandValidator() 
         {
             RuleFor(updateBookCommand =>
-                updateBookCommand.Title).NotNull().NotEmpty().MaximumLength(50);
+                updateBookCommand.updateBookDto.Title).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(updateBookCommand =>
-                updateBookCommand.Genre).NotNull().NotEmpty().MaximumLength(50);
+                updateBookCommand.updateBookDto.Genre).NotNull().NotEmpty().MaximumLength(50);
             RuleFor(updateBookCommand =>
-                updateBookCommand.Description).NotNull().NotEmpty().MaximumLength(500);
+                updateBookCommand.updateBookDto.Description).NotNull().NotEmpty().MaximumLength(500);
             RuleFor(updateBookCommand =>
-                updateBookCommand.Count).GreaterThanOrEqualTo(0);
+                updateBookCommand.updateBookDto.Count).GreaterThanOrEqualTo(0);
         }
     }
 }

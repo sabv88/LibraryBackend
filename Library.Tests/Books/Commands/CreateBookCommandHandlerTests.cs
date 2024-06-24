@@ -1,5 +1,6 @@
-﻿using LibraryApplication.Books.Commands.CreateBook;
-using LibraryDomain.Entities;
+﻿using AutoMapper;
+using LibraryApplication.Books.Commands.CreateBook;
+using LibraryApplication.DTOs.Book.Request;
 using LibraryTests.Common;
 
 namespace Library.Tests.Books.Commands
@@ -10,7 +11,7 @@ namespace Library.Tests.Books.Commands
         public async Task CreateBookCommandHandlerTests_Success()
         {
             // Arrange
-            var handler = new CreateBookCommandHandler(Context);
+            var handler = new CreateBookCommandHandler(Context, Mapper);
             var bookISBN = "978-0-201-53082-7";
             var bookTitle = "book title";
             var bookGenre = "book genre";
@@ -19,8 +20,8 @@ namespace Library.Tests.Books.Commands
             var bookImagePath = "book path";
 
             // Act
-            var bookId = await handler.Handle(
-                new CreateBookCommand
+            var bookId = await handler.Handle(new CreateBookCommand(
+                new CreateBookDto
                 {
                     ISBN = bookISBN,
                     Title = bookTitle,
@@ -28,12 +29,12 @@ namespace Library.Tests.Books.Commands
                     Description = bookDescription,
                     Count = bookCount,
                     ImagePath = bookImagePath,
-                    Authors = new List<Author>()
-                },
+                    Authors = new List<AuthorForCreateOrUpdatBookDto>()
+                }),
                 CancellationToken.None);
 
             // Assert
-            var book = await Context.Repository<Book>().GetByIdAsync(bookId);
+            var book = await Context.bookRepository.GetByIdAsync(bookId);
 
             Assert.NotNull(book);
             Assert.Equal(book.ISBN, bookISBN);

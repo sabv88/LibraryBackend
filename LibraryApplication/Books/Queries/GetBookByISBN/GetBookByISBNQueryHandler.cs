@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using LibraryApplication.Books.Queries.GetBookById;
 using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Book.Responce;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBookByISBN
@@ -10,15 +10,15 @@ namespace LibraryApplication.Books.Queries.GetBookByISBN
     public class GetBookByISBNQueryHandler : IRequestHandler<GetBookByISBNQuery, GetBookByISBNDto>
     {
         private readonly IMapper _mapper;
-        private readonly IBookRepository _bookRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public GetBookByISBNQueryHandler(IUnitOfWork unitOfWork,
-            IMapper mapper, IBookRepository bookRepository) => (_mapper, _bookRepository) = (mapper, bookRepository);
+            IMapper mapper) => (_mapper, _unitOfWork) = (mapper, unitOfWork);
 
         public async Task<GetBookByISBNDto> Handle(GetBookByISBNQuery request,
             CancellationToken cancellationToken)
         {
-            var entity = await _bookRepository.GetByISBNAsync(request.ISBN);
+            var entity = await _unitOfWork.bookRepository.GetByISBNAsync(request.ISBN, cancellationToken);
 
             if (entity == null)
             {

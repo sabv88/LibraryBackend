@@ -1,10 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Authors.Responce;
+using MediatR;
 
 namespace LibraryApplication.Authors.Queries.GetAuthorListPaginated
 {
-    public class GetPaginatedAuthorListQuery : IRequest<AuthorPaginatedList>
-    {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
-    }
+    public record GetPaginatedAuthorListQuery(int PageNumber, int PageSize) : IRequest<AuthorPaginatedList>;
 }

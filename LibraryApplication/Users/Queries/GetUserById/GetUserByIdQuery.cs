@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Users.Request;
+using MediatR;
 
 namespace LibraryApplication.Users.Queries.GetUserById
 {

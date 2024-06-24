@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Repositories;
+using LibraryApplication.DTOs.Book.Responce;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBookById
@@ -17,7 +18,7 @@ namespace LibraryApplication.Books.Queries.GetBookById
         public async Task<GetBookByIdDto> Handle(GetBookByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Book>()
+            var entity = await _unitOfWork.bookRepository
                 .GetByIdAsync(request.Id);
 
             if (entity == null)

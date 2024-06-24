@@ -2,8 +2,5 @@
 
 namespace LibraryApplication.Authors.Commands.DeleteAuthor
 {
-    public class DeleteAuthorCommand : IRequest<Unit>
-    {
-        public Guid Id { get; set; }
-    }
+    public record DeleteAuthorCommand(Guid Id) : IRequest<Unit>;
 }

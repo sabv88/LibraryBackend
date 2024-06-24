@@ -2,63 +2,20 @@
 import ModalButton from "./ModalBtn";
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
-import userManager, { loadUser, signinRedirect, signoutRedirect } from '../auth/user-service.ts';
+import { getBooks, takeBook } from '../services/BookService';
 
-const URL = `api/book`;
-const URL_BORROW = `api/borrow`;
 
 const Home = () => {
     const [allBooks, setBooks] = useState([]);
 
-    const getBooks = async () =>
-    {
-        const headers = new Headers();
-
-        const options = {
-            method: 'GET',
-            headers: headers
-        }
-        const result = await fetch(URL, options);
-        console.log(result);
-        if (result.ok) {
-            const books = await result.json();
-            console.log(books.books);
-
-            setBooks(books.books);
-            return books.books;
-        }
-        return [];
-    }
-
-    const takeBook = async (bookId, returnTime) =>
-    {
-        await loadUser();
-        const headers = new Headers();
-        const borrow = { bookId, returnTime };
-        console.log(bookId);
-
-        headers.set('Content-Type', 'application/json');
-        const token = localStorage.getItem('token');
-        headers.set('Authorization', 'Bearer ' + token);
-        console.log(token);
-
-        const options = {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(borrow)
-        };
-
-        const result = await fetch(URL_BORROW, options);
-        console.log(result);
-
-        if (result.ok)
-        {
-
-        }
-    }
 
     useEffect(() => {
-        getBooks();
+        const fetchBooks = async () => {
+            const books = await getBooks();
+            setBooks(books);
+        };
+
+        fetchBooks();
     }, [])
 
     return (

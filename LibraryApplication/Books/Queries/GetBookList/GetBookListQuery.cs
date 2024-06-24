@@ -1,8 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBookList
 {
-    public class GetBookListQuery : IRequest<BookList>
-    {
-    }
+    public record GetBookListQuery : IRequest<BookList>;
 }

@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using LibraryApplication.Repositories;
 using LibraryTests.Common;
 using LibraryApplication.Authors.Queries.GetAuthorListPaginated;
 using Shouldly;
+using LibraryApplication.DTOs.Authors.Responce;
+using LibraryDomain.Interfaces.Repositories;
 
 namespace Library.Tests.Authors.Queries
 {
@@ -26,7 +27,7 @@ namespace Library.Tests.Authors.Queries
 
             // Act
             var result = await handler.Handle(
-                new GetPaginatedAuthorListQuery { PageNumber = 1, PageSize = 2},
+                new GetPaginatedAuthorListQuery(1, 2),
                 CancellationToken.None);
 
             // Assert

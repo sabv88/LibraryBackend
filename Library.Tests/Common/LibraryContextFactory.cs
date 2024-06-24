@@ -1,4 +1,5 @@
-﻿using LibraryDomain.Entities;
+﻿using AutoMapper;
+using LibraryDomain.Entities;
 using LibraryPersistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +17,16 @@ namespace LibraryTests.Common
         public static Guid BookIdForDelete = Guid.NewGuid();
         public static Guid BookIdForUpdate = Guid.NewGuid();
 
+        public static IMapper Mapper;
+
         public static UnitOfWork Create()
         {
             var options = new DbContextOptionsBuilder<LibraryDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
+         
             var context = new LibraryDbContext(options);
+
             context.Database.EnsureCreated();
             context.Authors.AddRange(
                 new Author
@@ -30,7 +35,7 @@ namespace LibraryTests.Common
                     Name = "Name1",
                     Surname = "Surname1",
                     DateOfBirth = DateTime.Now,
-                    Country = "Country1"
+                    Country = "Country1",
                 },
                 new Author
                 {

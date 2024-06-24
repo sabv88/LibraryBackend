@@ -1,6 +1,6 @@
 ﻿using LibraryApplication.Common.Exceptions;
-using LibraryApplication.Repositories;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Authors.Commands.DeleteAuthor
@@ -15,14 +15,14 @@ namespace LibraryApplication.Authors.Commands.DeleteAuthor
         public async Task<Unit> Handle(DeleteAuthorCommand request,
             CancellationToken cancellationToken)
         {
-            var entity = await _unitOfWork.Repository<Author>().GetByIdAsync(request.Id);
+            var entity = await _unitOfWork.authorRepository.GetByIdAsync(request.Id);
 
             if (entity == null)
             {
                 throw new NotFoundException(nameof(Author), request.Id);
             }
 
-            await _unitOfWork.Repository<Author>().DeleteAsync(entity);
+            _unitOfWork.authorRepository.Delete(entity);
             await _unitOfWork.Save(cancellationToken);
 
             return Unit.Value;

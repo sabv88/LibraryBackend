@@ -1,29 +1,36 @@
-﻿using LibraryApplication.Repositories;
+﻿using AutoMapper;
+using LibraryApplication.Common.Exceptions;
 using LibraryDomain.Entities;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
-using System.Net;
 
 namespace LibraryApplication.Borrows.Commands.CreateBorrow
 {
     public class CreateBorrowCommandHandler : IRequestHandler<CreateBorrowCommand, Guid>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CreateBorrowCommandHandler(IUnitOfWork unitOfWork) =>
-                  _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper;
+
+        public CreateBorrowCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) => (_unitOfWork, _mapper) = (unitOfWork, mapper);
 
         public async Task<Guid> Handle(CreateBorrowCommand request,
             CancellationToken cancellationToken)
         {
+            var borrow = _mapper.Map<Borrow>(request.createBorrowDto);
+            borrow.Id = Guid.NewGuid();
+            borrow.TakingTime = DateTime.UtcNow;
+            var entityBook = await _unitOfWork.bookRepository.GetByIdAsync(request.createBorrowDto.BookId);
+            var entityUser = await _unitOfWork.userRepository.GetByIdAsyncWithBorrows(request.UserId);
 
-            var borrow = new Borrow
+            if(entityBook == null)
             {
-                Id = Guid.NewGuid(),
-                BookId = request.BookId,
-                TakingTime = request.TakingTime,
-                ReturnTime = request.ReturnTime,
-            };
-            var entityBook = await _unitOfWork.Repository<Book>().GetByIdAsync(request.BookId);
-            var entityUser = await _unitOfWork.Repository<User>().GetByIdAsync(request.UserId);
+                throw new NotFoundException(nameof(Book), request.createBorrowDto.BookId);
+            }
+
+            if (entityBook.Count < 1)
+            {
+                throw new OutOfStockException(nameof(Book), request.createBorrowDto.BookId);
+            }
 
             if (entityUser == null)
             {
@@ -34,13 +41,16 @@ namespace LibraryApplication.Borrows.Commands.CreateBorrow
                     Borrows = new List<Borrow>()
                 };
 
-                await _unitOfWork.Repository<User>().AddAsync(entityUser);
-                entityUser.Borrows.Add(borrow);
+                await _unitOfWork.userRepository.AddAsync(entityUser, cancellationToken);
             }
-            else
+            foreach(var borrowTemp in entityUser.Borrows)
             {
-                entityUser.Borrows.Add(borrow);
+                if(borrowTemp.BookId == borrow.BookId && borrow.Returned == false) 
+                {
+                    throw new AlredyTakenException(request.createBorrowDto.BookId, request.UserId);
+                }
             }
+            entityUser.Borrows.Add(borrow);
 
             entityBook.Count--;
 

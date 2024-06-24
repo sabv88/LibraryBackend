@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using LibraryApplication.Common.Extentions;
-using LibraryApplication.Repositories;
-using LibraryDomain.Entities;
+using LibraryApplication.DTOs.Authors.Responce;
+using LibraryDomain.Interfaces.Repositories;
 using MediatR;
 
 namespace LibraryApplication.Authors.Queries.GetAuthorListPaginated
@@ -18,10 +16,11 @@ namespace LibraryApplication.Authors.Queries.GetAuthorListPaginated
             CancellationToken cancellationToken)
         {
 
-            var a = await _unitOfWork.Repository<Author>().Entities
-            .ProjectTo<AuthorPaginatedDto>(_mapper.ConfigurationProvider)
-            .ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
-            return new AuthorPaginatedList { Authors = a };
+            var entity = await _unitOfWork.authorRepository
+            .GetPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+            var authors = _mapper.Map<List<AuthorPaginatedDto>>(entity);
+
+            return new AuthorPaginatedList { Authors = authors };
         }
     }
 }

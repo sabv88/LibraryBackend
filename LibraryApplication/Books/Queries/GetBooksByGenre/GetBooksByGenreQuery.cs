@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBooksByGenre
 {
-    public class GetBooksByGenreQuery : IRequest<BookByGenreList>
-    {
-        public string Genre { get; set; }
-    }
+    public record GetBooksByGenreQuery(string Genre) : IRequest<BookByGenreList>;
 }

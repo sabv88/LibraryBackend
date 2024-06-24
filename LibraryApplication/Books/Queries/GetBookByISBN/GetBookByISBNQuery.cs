@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using LibraryApplication.DTOs.Book.Responce;
+using MediatR;
 
 namespace LibraryApplication.Books.Queries.GetBookByISBN
 {
-    public class GetBookByISBNQuery : IRequest<GetBookByISBNDto>
-    {
-        public string ISBN { get; set; }
-    }
+    public record GetBookByISBNQuery(string ISBN) : IRequest<GetBookByISBNDto>;
 }

@@ -1,9 +1,7 @@
-﻿using LibraryApplication.Books.Queries.GetBookList;
-using LibraryApplication.Users.Queries;
+﻿using LibraryApplication.DTOs.Users.Request;
 using LibraryApplication.Users.Queries.GetUserById;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace LibraryWebApi.Controllers
 {
@@ -19,18 +17,18 @@ namespace LibraryWebApi.Controllers
         /// GET /user
         /// </remarks>
         /// <returns>Returns GetUserByIdDto</returns>
-        /// <response code="200">Success</response>
+        /// <response code="201">Success</response>
         
         [Authorize]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<GetUserByIdDto>> Get()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<GetUserByIdDto>> Get(CancellationToken cancellationToken)
         {
             var query = new GetUserByIdQuery
             { 
                 Id = UserId
             };
-            var vm = await Mediator.Send(query);
+            var vm = await Mediator.Send(query, cancellationToken);
             return Ok(vm);
         }
     }
